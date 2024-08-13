@@ -77,6 +77,8 @@ void setup()
 
                             Serial.print("Pattern changed to: ");
                             Serial.println(ws2812fx.getModeName(pattern)); });
+
+  state.setMode(Mode::OFF);
 }
 
 void loop()
