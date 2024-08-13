@@ -1,7 +1,17 @@
 #include "Button.h"
 
+void Button::onPress(ButtonCallback fn)
+{
+    callback = fn;
+}
+
 void Button::processButton()
 {
+    if (!callback)
+    {
+        return; // nothing to call, nothing to handle
+    }
+
     const uint32_t timeNow = millis();
     if (timeNow - lastDebounceTime < debounceDelay)
     {
@@ -12,7 +22,7 @@ void Button::processButton()
 
     if (currentState && !previousButtonState)
     {
-        onPress();
+        callback();
     }
 
     lastDebounceTime = timeNow;
