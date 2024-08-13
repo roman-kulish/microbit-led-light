@@ -6,8 +6,8 @@
 #undef min
 #undef max
 
-#include <array>
-#include <unordered_map>
+#include <vector>
+#include "WS2812FX.h"
 
 enum class Mode
 {
@@ -16,23 +16,33 @@ enum class Mode
     OFF
 };
 
+typedef void (*ModeChangeCallback)(Mode);
+typedef void (*PatternChangeCallback)(uint8_t);
+
 class State
 {
 public:
     State() = default;
 
+    void OnModeChange(ModeChangeCallback callback);
+    void OnPatternChange(PatternChangeCallback callback);
+
     void nextMode();
+    void setMode(Mode mode);
     Mode getMode() const;
 
     void nextPattern();
     uint8_t getPattern() const;
 
 private:
-    // static constexpr std::array<Mode, 3> modeSequence = {Mode::ON, Mode::MOTION_DETECTED, Mode::OFF};
-    static constexpr std::array<uint8_t, 9> patternSequence = {};
-
     uint8_t mode = 0;
     uint8_t pattern = 0;
+
+    ModeChangeCallback modeChangeCallback;
+    PatternChangeCallback patternChangeCallback;
+
+    static const std::vector<Mode> modeSequence;
+    static const std::vector<uint8_t> patternSequence;
 };
 
 #endif
