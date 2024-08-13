@@ -1,12 +1,61 @@
 #include "VEML6030.h"
 
-#undef min 
+#undef min
 #undef max
 
 #include <algorithm>
 
 namespace Sensor
 {
+    void VEML6030::setGain(float gain)
+    {
+        sensor.setGain(gain);
+    }
+
+    void VEML6030::setIntegrationTime(uint16_t integrationTime)
+    {
+        sensor.setIntegTime(integrationTime);
+    }
+
+    void VEML6030::setProtect(uint8_t protect)
+    {
+        sensor.setProtect(protect);
+    }
+
+    void VEML6030::setPowerSaveEnabled(bool powerSaveEnabled)
+    {
+        if (powerSaveEnabled)
+        {
+            sensor.enablePowSave();
+        }
+        else
+        {
+            sensor.disablePowSave();
+        }
+    }
+
+    void VEML6030::setPowerSaveMode(uint16_t powerSaveMode)
+    {
+        sensor.setPowSavMode(powerSaveMode);
+    }
+
+    void VEML6030::setLuxRange(float minLux, float maxLux)
+    {
+        this->minLux = minLux;
+        this->maxLux = maxLux;
+    }
+
+    void VEML6030::setBrightnessRange(uint8_t minBrightness, uint8_t maxBrightness)
+    {
+        this->minBrightness = minBrightness;
+        this->maxBrightness = maxBrightness;
+    }
+
+    void VEML6030::setLowPassFilterWeight(float weight)
+    {
+        filterWeight = weight;
+    }
+
     bool VEML6030::begin(TwoWire &wire)
     {
         if (!sensor.begin(wire))
@@ -14,40 +63,23 @@ namespace Sensor
             return false; // Sensor not found
         }
 
-        sensor.setGain(config.gain);
-        sensor.setIntegTime(config.integrationTime);
-        sensor.setProtect(config.protect);
-
-        if (config.powerSaveEnabled)
-        {
-            sensor.enablePowSave();
-            sensor.setPowSavMode(config.powerSaveMode);
-        }
-
         return true;
     }
 
     float VEML6030::readLux()
     {
-        float newLux = sensor.readLight();
-        filteredLux = config.filterWeight * newLux + (1 - config.filterWeight) * filteredLux; // apply low-pass filter
-
-        return filteredLux;
+        return sensor.readLight();
     }
 
     uint8_t VEML6030::getBrightness()
     {
-        float lux = readLux();
-        lux = std::max(config.minLux, std::min(lux, config.maxLux));
+        filteredLux = filterWeight * readLux() + (1 - filterWeight) * filteredLux; // apply low-pass filter
 
-        float ratio = (lux - config.minLux) / (config.maxLux - config.minLux);
-        uint8_t led_brightness = static_cast<uint8_t>(ratio * (config.maxBrightness - config.minBrightness)) + config.minBrightness;
+        float lux = std::max(minLux, std::min(filteredLux, maxLux));
+        float ratio = (lux - minLux) / (maxLux - minLux);
 
-        return std::max(config.minBrightness, std::min(led_brightness, config.maxBrightness));
-    }
+        uint8_t brightness = static_cast<uint8_t>(ratio * (maxBrightness - minBrightness)) + minBrightness;
 
-    bool VEML6030::isNightMode()
-    {
-        return getBrightness() < config.nightModeThreshold;
+        return std::max(minBrightness, std::min(brightness, maxBrightness));
     }
 }
