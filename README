@@ -1,46 +1,77 @@
+# Micro:bit V2 Interactive LED Strip with Motion and Light Sensing
 
-This directory is intended for project specific (private) libraries.
-PlatformIO will compile them to static libraries and link into executable file.
+This project showcases how to create an interactive LED strip experience using a Micro:bit V2 board, a PIR motion sensor, a VEML6030 ambient light sensor, and a WS2812B addressable LED strip. 
 
-The source code of each library should be placed in an own separate directory
-("lib/your_library_name/[here are source files]").
+## Features
 
-For example, see a structure of the following two libraries `Foo` and `Bar`:
+* **Multiple Modes:**
+    * **Lights ON:** LEDs display a static pattern, controlled by button B.
+    * **Motion Activated:** LEDs react to motion detected by the PIR sensor.
+    * **Lights OFF:**  All LEDs are turned off.
+* **Button Control:**
+    * Button A: Cycles through the different modes.
+    * Button B: Changes the LED animation pattern (in Lights ON mode).
+* **Ambient Light Sensing:** The VEML6030 sensor adjusts the brightness of the LEDs based on the surrounding light levels.
+* **WS2812B LED Strip:**  Utilizes the `WS2812FX` library for a variety of captivating LED animation patterns.
 
-|--lib
-|  |
-|  |--Bar
-|  |  |--docs
-|  |  |--examples
-|  |  |--src
-|  |     |- Bar.c
-|  |     |- Bar.h
-|  |  |- library.json (optional, custom build options, etc) https://docs.platformio.org/page/librarymanager/config.html
-|  |
-|  |--Foo
-|  |  |- Foo.c
-|  |  |- Foo.h
-|  |
-|  |- README --> THIS FILE
-|
-|- platformio.ini
-|--src
-   |- main.c
+## Hardware Requirements
 
-and a contents of `src/main.c`:
-```
-#include <Foo.h>
-#include <Bar.h>
+* Micro:bit V2 board
+* PIR motion sensor
+* VEML6030 ambient light sensor
+* WS2812B addressable LED strip (adjust length and power supply as needed)
+* Jumper wires
+* Breadboard (optional, for prototyping)
 
-int main (void)
-{
-  ...
-}
+## Software Requirements
 
-```
+* Arduino IDE or PlatformIO
+* Adafruit_Microbit library 
+* SparkFun_VEML6030_Ambient_Light_Sensor library
+* WS2812FX library
 
-PlatformIO Library Dependency Finder will find automatically dependent
-libraries scanning project source files.
+## Installation and Setup
 
-More information about PlatformIO Library Dependency Finder
-- https://docs.platformio.org/page/librarymanager/ldf.html
+1. **Clone or download this repository.**
+2. **Install the required libraries.** 
+3. **Connect the hardware components** according to the wiring diagram (provided below or in a separate file).
+4. **Open the project** in your Arduino IDE or PlatformIO.
+5. **Compile and upload** the code to your Micro:bit V2.
+
+## Wiring Diagram
+
+* *Include a clear and well-labeled wiring diagram here or reference a separate file.*
+
+## Code Structure
+
+* **`main.cpp`:**  Main program logic, setup, and loop.
+* **`Button.h/.cpp`:**  Button class for debouncing and handling button presses.
+* **`State.h/.cpp`:**  State management for modes and LED patterns.
+* **`VEML6030.h/.cpp`:**  Handles ambient light sensing and brightness adjustment.
+* **`matrix.h`:**  Defines Micro:bit LED matrix patterns for different modes.
+
+## Usage
+
+1. **Power on** your Micro:bit V2.
+2. **Press button A** to cycle through the modes.
+3. **Press button B** to change the LED animation pattern (in Lights ON mode).
+4. The LEDs will automatically adjust their brightness based on the ambient light.
+5. In Motion Activated mode, the LEDs will respond to motion detected by the PIR sensor.
+
+## Customization
+
+* Adjust the VEML6030 sensor settings and brightness mapping in `VEML6030.cpp` to fine-tune the light sensitivity.
+* Modify the LED animation patterns or add new ones in `State.cpp` and `WS2812FX.h`.
+* Experiment with different motion detection thresholds and LED responses in `main.cpp`.
+
+## Contributing
+
+Contributions are welcome! Feel free to submit pull requests or open issues to suggest improvements or report bugs.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+**Remember to replace placeholders (like the wiring diagram) with actual content relevant to your project.** 
+
+Let me know if you have any specific sections you want to add or modify in the README! 

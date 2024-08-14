@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Adafruit_Microbit.h>
 #include <Wire.h>
+#include "SparkFun_VEML6030_Ambient_Light_Sensor.h"
 #include "VEML6030.h"
 #include "Button.h"
 #include "State.h"
@@ -9,9 +10,10 @@
 
 Adafruit_Microbit uBit{};
 
-Sensor::VEML6030 light{};
+SparkFun_Ambient_Light lightSensor{0x10};
+Sensor::VEML6030 light{&lightSensor};
 
-WS2812FX ws2812fx{30, PIN_A0, NEO_GRB};
+WS2812FX ws2812fx{120, PIN_A0, NEO_GRB};
 
 Button buttonA{PIN_BUTTON_A};
 Button buttonB{PIN_BUTTON_B};
@@ -46,13 +48,7 @@ void setup()
 
   Wire.begin();
 
-  uBit.begin();
-
-  light.setGain(2);
-  light.setIntegrationTime(400);
-  light.setPowerSaveEnabled(false);
-
-  if (!light.begin(Wire))
+  if (!lightSensor.begin())
   {
     Serial.println("Ambient light sensor not found. Halting ...");
 
@@ -60,8 +56,17 @@ void setup()
       ; // Hang here
   }
 
+  lightSensor.setGain(2);
+  lightSensor.setIntegTime(400);
+  lightSensor.disablePowSave();
+
+  uBit.begin();
+
   ws2812fx.init();
   ws2812fx.setMode(state.getPattern());
+
+  uint32_t colors[] = {BLUE, YELLOW, GREEN};
+  ws2812fx.setColors(0, colors);
 
   buttonA.onPress([]()
                   { state.nextMode(); });
