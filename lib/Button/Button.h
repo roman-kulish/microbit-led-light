@@ -3,27 +3,29 @@
 
 #include <Arduino.h>
 
-typedef void (*ButtonCallback)(void);
+#undef min
+#undef max
+
+#include <functional>
 
 class Button
 {
 public:
-    explicit Button(uint32_t pin, unsigned long debounceDelay = 30) : pin(pin), debounceDelay(debounceDelay)
+    explicit Button(uint32_t pin, uint32_t debounceDelay = 30) : m_pin(pin), m_debounceDelay(debounceDelay)
     {
         pinMode(pin, INPUT_PULLUP);
     }
 
-    void onPress(ButtonCallback callback);
+    void onPress(std::function<void()> callback);
     void processButton();
 
 private:
-    uint32_t pin;
+    uint32_t m_pin;
+    std::function<void()> m_callback;
 
-    ButtonCallback callback;
-
-    uint32_t debounceDelay;
-    uint32_t lastDebounceTime = 0;
-    bool previousButtonState = false;
+    uint32_t m_debounceDelay;
+    uint32_t m_lastDebounceTime = 0;
+    bool m_previousButtonState = false;
 };
 
 #endif

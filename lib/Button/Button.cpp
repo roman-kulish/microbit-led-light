@@ -1,30 +1,30 @@
 #include "Button.h"
 
-void Button::onPress(ButtonCallback fn)
+void Button::onPress(std::function<void()> callback)
 {
-    callback = fn;
+    m_callback = callback;
 }
 
 void Button::processButton()
 {
-    if (!callback)
+    if (!m_callback)
     {
         return; // nothing to call, nothing to handle
     }
 
     const uint32_t timeNow = millis();
-    if (timeNow - lastDebounceTime < debounceDelay)
+    if (timeNow - m_lastDebounceTime < m_debounceDelay)
     {
         return;
     }
 
-    bool currentState = (digitalRead(pin) == LOW);
+    bool currentState = (digitalRead(m_pin) == LOW);
 
-    if (currentState && !previousButtonState)
+    if (currentState && !m_previousButtonState)
     {
-        callback();
+        m_callback();
     }
 
-    lastDebounceTime = timeNow;
-    previousButtonState = currentState;
+    m_lastDebounceTime = timeNow;
+    m_previousButtonState = currentState;
 }
