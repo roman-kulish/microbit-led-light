@@ -3,46 +3,41 @@
 
 #include <Arduino.h>
 
+#ifdef min
 #undef min
+#endif
+
+#ifdef max
 #undef max
+#endif
 
 #include <vector>
+#include <functional>
 #include "WS2812FX.h"
-
-enum class Mode
-{
-    ON,
-    MOTION_DETECTED,
-    OFF
-};
-
-typedef void (*ModeChangeCallback)(Mode);
-typedef void (*PatternChangeCallback)(uint8_t);
 
 class State
 {
 public:
     State() = default;
 
-    void OnModeChange(ModeChangeCallback callback);
-    void OnPatternChange(PatternChangeCallback callback);
+    void OnStateChange(std::function<void(bool isOn)> callback);
+    void OnPatternChange(std::function<void(uint8_t pattern)> callback);
 
-    void nextMode();
-    void setMode(Mode mode);
-    Mode getMode() const;
+    void setState(bool on);
+    void toggle();
+    bool isOn() const;
 
     void nextPattern();
     uint8_t getPattern() const;
 
 private:
-    uint8_t mode = 0;
-    uint8_t pattern = 0;
+    bool m_isOn = false;
+    uint8_t m_pattern = 0;
 
-    ModeChangeCallback modeChangeCallback;
-    PatternChangeCallback patternChangeCallback;
+    std::function<void(bool isOn)> m_stateChangeCallback;
+    std::function<void(uint8_t pattern)> m_patternChangeCallback;
 
-    static const std::vector<Mode> modeSequence;
-    static const std::vector<uint8_t> patternSequence;
+    static const std::vector<uint8_t> m_patternSequence;
 };
 
 #endif

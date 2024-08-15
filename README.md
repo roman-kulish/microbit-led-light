@@ -1,4 +1,4 @@
-# Micro:bit V2 Interactive LED Strip with Motion and Light Sensing
+# Micro:bit V2 Interactive LED Strip with Light Sensing
 
 This project showcases how to create an interactive LED strip experience using a Micro:bit V2 board, a VEML6030 ambient light sensor, and a WS2812B addressable LED strip. 
 

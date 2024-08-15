@@ -26,13 +26,6 @@ static constexpr uint8_t IMAGE_MODE_ON[5] = {
     B10001,
     B01110};
 
-static constexpr uint8_t IMAGE_MODE_MOTION_DETECTED[5] = {
-    B01111,
-    B11010,
-    B11100,
-    B11110,
-    B01111};
-
 static constexpr uint8_t IMAGE_MODE_OFF[5] = {
     B00000,
     B01010,
@@ -40,23 +33,17 @@ static constexpr uint8_t IMAGE_MODE_OFF[5] = {
     B01110,
     B10001};
 
-void onModeChange(Mode mode)
+void onStateChange(bool isOn)
 {
-  switch (mode)
+  if (isOn)
   {
-  case Mode::ON:
     uBit.matrix.show(IMAGE_MODE_ON);
     ws2812fx.start();
-    break;
 
-  case Mode::MOTION_DETECTED:
-    uBit.matrix.show(IMAGE_MODE_MOTION_DETECTED);
-    break;
+    return;
 
-  case Mode::OFF:
     uBit.matrix.show(IMAGE_MODE_OFF);
     ws2812fx.stop();
-    break;
   }
 }
 
@@ -88,7 +75,7 @@ void setup()
   uint32_t colors[] = {BLUE, YELLOW, GREEN};
   ws2812fx.setColors(0, colors);
 
-  state.OnModeChange(onModeChange);
+  state.OnStateChange(onStateChange);
 
   state.OnPatternChange([](uint8_t pattern)
                         {
@@ -98,12 +85,12 @@ void setup()
                             Serial.println(ws2812fx.getModeName(pattern)); });
 
   buttonA.onPress([]()
-                  { state.nextMode(); });
+                  { state.toggle(); });
 
   buttonB.onPress([]()
                   { state.nextPattern(); });
 
-  state.setMode(Mode::OFF);
+  state.setState(false);
 }
 
 void loop()

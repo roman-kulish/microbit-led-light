@@ -1,11 +1,6 @@
 #include "State.h"
 
-const std::vector<Mode> State::modeSequence = {
-    Mode::OFF,
-    Mode::ON,
-    Mode::MOTION_DETECTED};
-
-const std::vector<uint8_t> State::patternSequence = {
+const std::vector<uint8_t> State::m_patternSequence = {
     // FX_MODE_BLINK,
     // FX_MODE_BREATH,
     // FX_MODE_COLOR_WIPE,
@@ -64,69 +59,62 @@ const std::vector<uint8_t> State::patternSequence = {
     // FX_MODE_RAIN,
 };
 
-void State::OnModeChange(ModeChangeCallback callback)
+void State::OnStateChange(std::function<void(bool)> callback)
 {
-    modeChangeCallback = callback;
+    m_stateChangeCallback = callback;
 }
 
-void State::OnPatternChange(PatternChangeCallback callback)
+void State::OnPatternChange(std::function<void(uint8_t pattern)> callback)
 {
-    patternChangeCallback = callback;
+    m_patternChangeCallback = callback;
 }
 
-void State::nextMode()
+void State::setState(bool on)
 {
-    mode = (mode + 1) % modeSequence.size();
+    m_isOn = on;
 
-    if (modeChangeCallback)
+    if (m_stateChangeCallback)
     {
-        modeChangeCallback(getMode());
+        m_stateChangeCallback(m_isOn);
     }
 }
 
-void State::setMode(Mode newMode)
+void State::toggle()
 {
-    for (uint8_t i = 0; i < modeSequence.size(); i++)
-    {
-        if (modeSequence[i] == newMode)
-        {
-            mode = i;
-            break;
-        }
-    }
+    m_isOn = !m_isOn;
 
-    if (modeChangeCallback)
+    if (m_stateChangeCallback)
     {
-        modeChangeCallback(newMode);
+        m_stateChangeCallback(m_isOn);
     }
 }
 
-Mode State::getMode() const
+bool State::isOn() const
 {
-    return modeSequence.at(mode);
+    return m_isOn;
 }
 
 void State::nextPattern()
 {
-    pattern = (pattern + 1) % patternSequence.size();
+    m_pattern = (m_pattern + 1) % m_patternSequence.size();
 
-    if (patternChangeCallback)
+    if (m_patternChangeCallback)
     {
-        patternChangeCallback(getPattern());
+        m_patternChangeCallback(getPattern());
     }
 
-    if (getMode() == Mode::OFF)
+    if (!isOn())
     {
-        setMode(Mode::ON); // act as an on-switch
+        setState(true); // act as an on-switch
 
-        if (modeChangeCallback)
+        if (m_stateChangeCallback)
         {
-            modeChangeCallback(getMode());
+            m_stateChangeCallback(isOn());
         }
     }
 }
 
 uint8_t State::getPattern() const
 {
-    return patternSequence[pattern];
+    return m_patternSequence[m_pattern];
 }
