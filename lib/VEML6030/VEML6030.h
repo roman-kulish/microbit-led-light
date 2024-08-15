@@ -14,7 +14,9 @@ namespace Sensor
     class VEML6030
     {
     public:
-        explicit VEML6030(SparkFun_Ambient_Light *sensor) : sensor(sensor) {};
+        VEML6030() = default;
+
+        bool begin(SparkFun_Ambient_Light *sensor);
 
         void setLuxRange(float minLux, float maxLux);
         void setBrightnessRange(uint8_t minBrightness, uint8_t maxBrightness);
@@ -24,15 +26,14 @@ namespace Sensor
         uint8_t getBrightness();
 
     private:
-        SparkFun_Ambient_Light *sensor;
+        SparkFun_Ambient_Light *m_sensor = nullptr;
+        float m_filteredLux = 0.0f;
 
-        float filteredLux = 0.0f;
-
-        float minLux = 0.0f;         // Default minimum lux level
-        float maxLux = 500.0f;       // Default maximum lux level
-        uint8_t minBrightness = 5;   // Default minimum LED brightness
-        uint8_t maxBrightness = 255; // Default maximum LED brightness
-        float filterWeight = 0.2f;   // Default filter weight for low-pass filter
+        float m_minLux = 0.0f;         // Default minimum lux level
+        float m_maxLux = 500.0f;       // Default maximum lux level
+        uint8_t m_minBrightness = 5;   // Default minimum LED brightness
+        uint8_t m_maxBrightness = 255; // Default maximum LED brightness
+        float m_filterWeight = 0.2f;   // Default filter weight for low-pass filter
     };
 }
 

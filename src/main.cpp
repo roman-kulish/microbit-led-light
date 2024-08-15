@@ -5,13 +5,12 @@
 #include "VEML6030.h"
 #include "Button.h"
 #include "State.h"
-#include "matrix.h"
 #include <WS2812FX.h>
 
 Adafruit_Microbit uBit{};
 
 SparkFun_Ambient_Light lightSensor{0x10};
-Sensor::VEML6030 light{&lightSensor};
+Sensor::VEML6030 light{};
 
 WS2812FX ws2812fx{120, PIN_A0, NEO_GRB};
 
@@ -19,6 +18,27 @@ Button buttonA{PIN_BUTTON_A};
 Button buttonB{PIN_BUTTON_B};
 
 State state{};
+
+static constexpr uint8_t IMAGE_MODE_ON[5] = {
+    B00000,
+    B01010,
+    B00000,
+    B10001,
+    B01110};
+
+static constexpr uint8_t IMAGE_MODE_MOTION_DETECTED[5] = {
+    B01111,
+    B11010,
+    B11100,
+    B11110,
+    B01111};
+
+static constexpr uint8_t IMAGE_MODE_OFF[5] = {
+    B00000,
+    B01010,
+    B00000,
+    B01110,
+    B10001};
 
 void onModeChange(Mode mode)
 {
@@ -48,7 +68,7 @@ void setup()
 
   Wire.begin();
 
-  if (!lightSensor.begin())
+  if (!light.begin(&lightSensor))
   {
     Serial.println("Ambient light sensor not found. Halting ...");
 
@@ -68,12 +88,6 @@ void setup()
   uint32_t colors[] = {BLUE, YELLOW, GREEN};
   ws2812fx.setColors(0, colors);
 
-  buttonA.onPress([]()
-                  { state.nextMode(); });
-
-  buttonB.onPress([]()
-                  { state.nextPattern(); });
-
   state.OnModeChange(onModeChange);
 
   state.OnPatternChange([](uint8_t pattern)
@@ -82,6 +96,12 @@ void setup()
 
                             Serial.print("Pattern changed to: ");
                             Serial.println(ws2812fx.getModeName(pattern)); });
+
+  buttonA.onPress([]()
+                  { state.nextMode(); });
+
+  buttonB.onPress([]()
+                  { state.nextPattern(); });
 
   state.setMode(Mode::OFF);
 }
