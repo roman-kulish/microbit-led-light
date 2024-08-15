@@ -13,7 +13,7 @@ This project showcases how to create an interactive LED strip experience using a
 * **Ambient Light Sensing:** The VEML6030 sensor adjusts the brightness of the LEDs based on the surrounding light levels.
 * **WS2812B LED Strip:**  Utilizes the `WS2812FX` library for a variety of captivating LED animation patterns.
 
-## Hardware Requirements
+## Shopping List
 
 * Micro:bit V2 board (https://core-electronics.com.au/micro-bit-v2-go-kit-australia.html)
 * PiicoDev Adapter for Micro:bit (https://core-electronics.com.au/piicodev-adapter-for-micro-bit.html)
