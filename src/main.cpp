@@ -41,10 +41,10 @@ void onStateChange(bool isOn)
     ws2812fx.start();
 
     return;
-
-    uBit.matrix.show(IMAGE_MODE_OFF);
-    ws2812fx.stop();
   }
+
+  uBit.matrix.show(IMAGE_MODE_OFF);
+  ws2812fx.stop();
 }
 
 void setup()

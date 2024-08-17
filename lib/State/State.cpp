@@ -75,7 +75,7 @@ void State::setState(bool on)
 
     if (m_stateChangeCallback)
     {
-        m_stateChangeCallback(m_isOn);
+        m_stateChangeCallback(isOn());
     }
 }
 
@@ -85,7 +85,7 @@ void State::toggle()
 
     if (m_stateChangeCallback)
     {
-        m_stateChangeCallback(m_isOn);
+        m_stateChangeCallback(isOn());
     }
 }
 
